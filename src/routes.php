@@ -56,6 +56,7 @@ $app->post('/login-callback', function ($request, $response, $args) {
                     if(stristr($lists['name'],"test")){
                         $subscriberListId=$lists['id'];
                     }
+
                     if(!empty($subscriberListId))
                         break;
                 }
