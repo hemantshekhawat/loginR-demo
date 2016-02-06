@@ -22,7 +22,7 @@ You would need access to this portal to set up the social login. For e.g for Fac
 
      Test MailChimp Account
           testAccountLoginR
-          Lr!234567890
+          
 
 
 
