@@ -8,11 +8,12 @@ if (PHP_SAPI == 'cli-server') {
     }
 }
 
+session_start();
+date_default_timezone_set("IST");
 require __DIR__ . '/../vendor/autoload.php';
 
-session_start();
-
 // Instantiate the app
+require __DIR__ . '/../src/config/settings.php';
 $settings = require __DIR__ . '/../src/settings.php';
 $app = new \Slim\App($settings);
 
@@ -21,6 +22,9 @@ require __DIR__ . '/../src/dependencies.php';
 
 // Register middleware
 require __DIR__ . '/../src/middleware.php';
+
+// Require Helper Classes
+require __DIR__ . '/../src/helpers/MailChimpSubs.php';
 
 // Register routes
 require __DIR__ . '/../src/routes.php';

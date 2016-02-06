@@ -1,33 +1,108 @@
 <?php
 // Routes
+use LoginRadiusSDK\LoginRadius;
+use LoginRadiusSDK\LoginRadiusException;
+use LoginRadiusSDK\SocialLogin\GetProvidersAPI;
+use LoginRadiusSDK\SocialLogin\SocialLoginAPI;
+use LoginRadiusSDK\CustomerRegistration\UserAPI;
+use LoginRadiusSDK\CustomerRegistration\AccountAPI;
+use LoginRadiusSDK\CustomerRegistration\CustomObjectAPI;
 
 
+$app->post('/login-callback', function ($request, $response, $args) {
+    $this->logger->info("Callback ");
+    $request_token=$request->getParams();
+    try{
 
-$app->map(['GET', 'POST'],'/login', function ($request, $response, $args) {
-    if ( $request->isPost() ) {
-        echo "<pre>";
-        print_r($request->getParams());exit;
-        //If valid login, set auth cookie and redirect
+
+        $responseArr = ['status' => "failure", "msg" => "Something went wrong. Would you mind giving a try again?"];
+
+        $socialLoginObject = new SocialLoginAPI (LR_API_KEY, LR_API_SECRET, array('authentication'=>false, 'output_format' => 'json'));
+        $accesstoken = $socialLoginObject->exchangeAccessToken($request_token['token']);//$request_token loginradius token get from social/traditional interface after success authentication.
+        $accesstoken = $accesstoken->access_token;
+        $userProfileData = $socialLoginObject->getUserProfiledata($accesstoken);
+
+        if(!empty($userProfileData->Email)) {
+
+            $responseArr = ['status' => "success", "msg" => "Successfully logged in"];
+            /*
+             * Call MailChimp here
+             */
+
+            $userData = [
+                'FNAME' => $userProfileData->FirstName,
+                'LNAME' => $userProfileData->LastName
+            ];
+
+            foreach ($userProfileData->Email as $email) {
+                $userData['EMAIL'] = $email->Value;
+            }
+
+            $mailChimpObj = new Mailchimp(MAILCHIMP_API_KEY);
+            $mailChimpListsObj = new Mailchimp_Lists($mailChimpObj);//(MAILCHIMP_API_KEY);
+
+            $allList=$mailChimpListsObj->getList();
+//            echo "<pre>";
+//            var_dump($allList);
+//            exit;
+
+            if(intval($allList["total"]) >= 1){
+
+                $subscriberListId=null;
+                foreach($allList['data'] as $lists){
+                    if(stristr($lists['name'],"test")){
+                        $subscriberListId=$lists['id'];
+                    }
+                    if(!empty($subscriberListId))
+                        break;
+                }
+
+                if(!empty($subscriberListId)){
+                    foreach ($userProfileData->Email as $email) {
+                        $data=$mailChimpListsObj->Subscribe($subscriberListId,array("email"=>trim($email->Value)),$userData,false,true,false);
+//                        echo "<pre>";
+//                        print_r($data);
+                        if(empty($data['email'])){
+                            $responseArr["subscription"] = ['status' => "failure", "msg" => "subscription failure"];
+                        }else{
+                            $responseArr["subscription"] = ['status' => "success", "msg" => "subscription success"];
+                        }
+                    }
+                }
+            }
+
+//            $mailChimpObj = new MailChimpSubs();
+//            $subscriptions = $mailChimpObj->addSubscriber($userData);
+//
+//            if(stristr($subscriptions,"all")) {
+//                $responseArr["subscription"] = ['status' => "success", "msg" => "Successfully added to subscription list"];
+//
+//            }elseif(stristr($subscriptions,"partial")){
+//                $responseArr["subscription"] = ['status' => "success", "msg" => "Added to subscription list but not all email IDs associated the social account"];
+//
+//            }elseif(stristr($subscriptions,"none")){
+//                $responseArr["subscription"] = ['status' => "failure", "msg" => "failed to add you to subscription list"];
+//
+//            }elseif(stristr($subscriptions,"listidempty")){
+//                $responseArr["subscription"] = ['status' => "failure", "msg" => "could not find the subscribers list"];
+//
+//            }elseif(stristr($subscriptions,"emptyemail")){
+//                $responseArr["subscription"] = ['status' => "failure", "msg" => "could not find the subscribers list"];
+//
+//            }else{
+//                $responseArr["subscription"] = ['status' => "failure", "msg" => "subscription failure"];
+//
+//            }
+        }
     }
-    $this->renderer->render($response, 'login.phtml');
+    catch (LoginRadiusException $e){
+        $e->getMessage();
+        $e->getErrorResponse();
+    }
+    $this->renderer->render($response, 'thankyou.phtml',["resp"=>$responseArr,"data"=>$userData]);
 });
-
-$app->get('/logout', function () {
-    //Remove auth cookie and redirect to login page
-});
-
-
-
-//$app->get('/protected-page', $authenticateForRole('admin'), function () {
-//    //Show protected information
-//});
-
-
 
 $app->get('/', function ($request, $response) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
-
     // Render index view
-    return $this->renderer->render($response, 'index.phtml');
+    return $this->renderer->render($response, 'login.phtml');
 });

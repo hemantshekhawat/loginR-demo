@@ -5,9 +5,9 @@
         <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
         <style>
             body {
-                margin: 50px 0 0 0;
+                margin: 50px;
                 padding: 0;
-                width: 100%;
+                width: 90%;
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 text-align: center;
                 color: #aaa;
@@ -23,20 +23,24 @@
                 margin-bottom: 0;
             }
         </style>
+
+        <script src="https://hub.loginradius.com/include/js/LoginRadius.js"></script>
+        <script type="text/javascript"> var options={}; options.login=true; LoginRadius_SocialLogin.util.ready(function () { $ui = LoginRadius_SocialLogin.lr_login_settings;$ui.interfacesize = "";$ui.apikey = "68586157-f6b4-493f-9a7c-bebfe80d82a3";$ui.callback="http://localhost/login-callback"; $ui.lrinterfacecontainer ="interfacecontainerdiv"; LoginRadius_SocialLogin.init(options); }); </script>
+
+
+
+
     </head>
     <body>
         <h1>Login Radius Demo</h1>
-        <div>Please Login or Register</div>
+        <div>Please Login Using Facebook App</div>
 
-        <div class="col-md-12 col-sm-6">
-            <div style="align-content: center; border: 2px solid #3b5998; ">
-                <form action="/login" method="post">
-                    <input type="email" name="email" required placeholder="Your email please">
-                    <input type="password" name="password" required placeholder="Your password please">
-                    <input type="submit" name="submit" value="Login">
-                    <input type="reset" name="reset" value="Reset">
-                </form>
-            </div>
+        <hr>
+        <div id="interfacecontainerdiv" class="interfacecontainerdiv"></div>
+
+        <div>
+            <br>
+             <br>
 
         </div>
     </body>
