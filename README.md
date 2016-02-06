@@ -17,7 +17,7 @@ You would need access to this portal to set up the social login. For e.g for Fac
 
 
 
-     On Confirmation, you'll receive a mail in your Email account. Once you verify the account from the email you receive, you will be added to the subscription list.
+##On Confirmation, you'll receive a mail in your Email account. Once you verify the account from the email you receive, you will be added to the subscription list.
 
 
      Test MailChimp Account
