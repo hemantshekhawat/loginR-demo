@@ -12,24 +12,24 @@ session_start();
 date_default_timezone_set("Asia/kolkata");
 
 //echo dirname(dirname(__FILE__));
-require (dirname(dirname(__FILE__)) . '/vendor/autoload.php');
+require_once (dirname(dirname(__FILE__)) . '/vendor/autoload.php');
 
 // Instantiate the app
-require( dirname(dirname(__FILE__)) . '/src/config/settings.php');
-$settings = require (dirname(dirname(__FILE__)) . '/src/settings.php');
+require_once( dirname(dirname(__FILE__)) . '/src/config/settings.php');
+$settings = require_once(dirname(dirname(__FILE__)) . '/src/settings.php');
 $app = new \Slim\App($settings);
 
 // Set up dependencies
-require (dirname(dirname(__FILE__)) . '/src/dependencies.php');
+require_once(dirname(dirname(__FILE__)) . '/src/dependencies.php');
 
 // Register middleware
-require (dirname(dirname(__FILE__)) . '/src/middleware.php');
+require_once (dirname(dirname(__FILE__)) . '/src/middleware.php');
 
 // Require Helper Classes
-require (dirname(dirname(__FILE__)) . '/src/helpers/MailChimpSubs.php');
+require_once(dirname(dirname(__FILE__)) . '/src/helpers/MailChimpSubs.php');
 
 // Register routes
-require (dirname(dirname(__FILE__)) . '/src/routes.php');
+require_once(dirname(dirname(__FILE__)) . '/src/routes.php');
 
 // Run app
 $app->run();
