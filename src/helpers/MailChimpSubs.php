@@ -46,8 +46,6 @@ class MailChimpSubs
                     if(!empty($mailChimpResponse) && isset($mailChimpResponse['email']) && isset($mailChimpResponse['leid'])){
                         $counts++;
                     }
-                    echo "<pre> Subscription response";
-                    print_r($mailChimpResponse);
                 }
                 if($counts == $TotalCounts){
                     return "all";
@@ -62,10 +60,6 @@ class MailChimpSubs
         }else{
             return "emptyEmail";
         }
-    }
-
-    public function subscribe(){
-
     }
 
     public function executeMailChimpApi($url,$params=array()){

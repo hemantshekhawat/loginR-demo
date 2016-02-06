@@ -4,10 +4,16 @@ use LoginRadiusSDK\LoginRadius;
 use LoginRadiusSDK\LoginRadiusException;
 use LoginRadiusSDK\SocialLogin\GetProvidersAPI;
 use LoginRadiusSDK\SocialLogin\SocialLoginAPI;
-use LoginRadiusSDK\CustomerRegistration\UserAPI;
-use LoginRadiusSDK\CustomerRegistration\AccountAPI;
-use LoginRadiusSDK\CustomerRegistration\CustomObjectAPI;
+//use LoginRadiusSDK\CustomerRegistration\UserAPI;
+//use LoginRadiusSDK\CustomerRegistration\AccountAPI;
+//use LoginRadiusSDK\CustomerRegistration\CustomObjectAPI;
 
+
+
+$app->get('/', function ($request, $response) {
+    // Render index view
+    return $this->renderer->render($response, 'login.phtml');
+});
 
 $app->post('/login-callback', function ($request, $response, $args) {
     $this->logger->info("Callback ");
@@ -42,9 +48,6 @@ $app->post('/login-callback', function ($request, $response, $args) {
             $mailChimpListsObj = new Mailchimp_Lists($mailChimpObj);//(MAILCHIMP_API_KEY);
 
             $allList=$mailChimpListsObj->getList();
-//            echo "<pre>";
-//            var_dump($allList);
-//            exit;
 
             if(intval($allList["total"]) >= 1){
 
@@ -59,21 +62,32 @@ $app->post('/login-callback', function ($request, $response, $args) {
 
                 if(!empty($subscriberListId)){
                     foreach ($userProfileData->Email as $email) {
-                        $data=$mailChimpListsObj->Subscribe($subscriberListId,array("email"=>trim($email->Value)),$userData,false,true,false);
-//                        echo "<pre>";
-//                        print_r($data);
+
+                        try{
+                            $data=$mailChimpListsObj->Subscribe($subscriberListId,array("email"=>trim($email->Value)),$userData);
+                        }catch(Exception $exp){
+                            $data=$mailChimpListsObj->updateMember($subscriberListId,array("email"=>trim($email->Value)),$userData);
+                        }
                         if(empty($data['email'])){
                             $responseArr["subscription"] = ['status' => "failure", "msg" => "subscription failure"];
                         }else{
-                            $responseArr["subscription"] = ['status' => "success", "msg" => "subscription success"];
+                            $responseArr["subscription"] = ['status' => "success", "msg" => "subscription success.  Please visit you email account {$email->Value} and verify your subscription."];
                         }
                     }
                 }
             }
 
+            /*
+             * Alternate Implementation Using Directions from Login Radius Documentation
+             */
+
 //            $mailChimpObj = new MailChimpSubs();
 //            $subscriptions = $mailChimpObj->addSubscriber($userData);
 //
+            /*
+             * Response
+             */
+
 //            if(stristr($subscriptions,"all")) {
 //                $responseArr["subscription"] = ['status' => "success", "msg" => "Successfully added to subscription list"];
 //
@@ -100,9 +114,4 @@ $app->post('/login-callback', function ($request, $response, $args) {
         $e->getErrorResponse();
     }
     $this->renderer->render($response, 'thankyou.phtml',["resp"=>$responseArr,"data"=>$userData]);
-});
-
-$app->get('/', function ($request, $response) {
-    // Render index view
-    return $this->renderer->render($response, 'login.phtml');
 });

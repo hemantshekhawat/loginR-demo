@@ -11,25 +11,25 @@ if (PHP_SAPI == 'cli-server') {
 session_start();
 date_default_timezone_set("Asia/kolkata");
 
-//echo dirname(dirname(__FILE__));
-require_once (dirname(dirname(__FILE__)) . '/vendor/autoload.php');
+
+require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate the app
-require_once( dirname(dirname(__FILE__)) . '/src/config/settings.php');
-$settings = require_once(dirname(dirname(__FILE__)) . '/src/settings.php');
+require __DIR__ . '/../src/config/settings.php';
+$settings = require __DIR__ . '/../src/settings.php';
 $app = new \Slim\App($settings);
 
 // Set up dependencies
-require_once(dirname(dirname(__FILE__)) . '/src/dependencies.php');
+require __DIR__ . '/../src/dependencies.php';
 
 // Register middleware
-require_once (dirname(dirname(__FILE__)) . '/src/middleware.php');
+require __DIR__ . '/../src/middleware.php';
 
 // Require Helper Classes
-require_once(dirname(dirname(__FILE__)) . '/src/helpers/MailChimpSubs.php');
+require __DIR__ . '/../src/helpers/MailChimpSubs.php';
 
 // Register routes
-require_once(dirname(dirname(__FILE__)) . '/src/routes.php');
+require __DIR__ . '/../src/routes.php';
 
 // Run app
 $app->run();
