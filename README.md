@@ -17,6 +17,12 @@ You would need access to this portal to set up the social login. For e.g for Fac
 
 
 
-Note :
-** Please use the documentation effectively. There any enough details in APIdocs and the links that I've shared with you.
-** For this integration, you may need to set up the SMTP for localhost.
+     On Confirmation, you'll receive a mail in your Email account. Once you verify the account from the email you receive, you will be added to the subscription list.
+
+
+     Test MailChimp Account
+          testAccountLoginR
+          Lr!234567890
+
+
+
